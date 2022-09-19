@@ -28,12 +28,12 @@ module Scenic
         if creating_new_view? || destroying_initial_view?
           migration_template(
             "db/migrate/create_view.erb",
-            "db/migrate/create_#{plural_file_name}.rb",
+            "db/migrate/create_#{file_name}.rb",
           )
         else
           migration_template(
             "db/migrate/update_view.erb",
-            "db/migrate/update_#{plural_file_name}_to_version_#{version}.rb",
+            "db/migrate/update_#{file_name}_to_version_#{version}.rb",
           )
         end
       end
@@ -56,9 +56,9 @@ module Scenic
 
         def migration_class_name
           if creating_new_view?
-            "Create#{class_name.tr('.', '').pluralize}"
+            "Create#{class_name.tr('.', '')}"
           else
-            "Update#{class_name.pluralize}ToVersion#{version}"
+            "Update#{class_name}ToVersion#{version}"
           end
         end
 
@@ -84,7 +84,7 @@ module Scenic
       end
 
       def version_regex
-        /\A#{plural_file_name}_v(?<version>\d+)\.sql\z/
+        /\A#{file_name}_v(?<version>\d+)\.sql\z/
       end
 
       def creating_new_view?
@@ -92,11 +92,11 @@ module Scenic
       end
 
       def definition
-        Scenic::Definition.new(plural_file_name, version)
+        Scenic::Definition.new(file_name, version)
       end
 
       def previous_definition
-        Scenic::Definition.new(plural_file_name, previous_version)
+        Scenic::Definition.new(file_name, previous_version)
       end
 
       def destroying?
@@ -105,9 +105,9 @@ module Scenic
 
       def formatted_plural_name
         if plural_name.include?(".")
-          "\"#{plural_name}\""
+          "\"#{name}\""
         else
-          ":#{plural_name}"
+          ":#{name}"
         end
       end
 
